@@ -1,9 +1,18 @@
-var express = require('express');
-var router = express.Router();
+//var express = require('express');
+//var router = express.Router();
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
 
-module.exports = router;
+
+//router.get('/users', require('./users').get);
+
+module.exports = function(app) {
+
+    app.get('/', function(req, res, next) {
+        res.send('error');
+    });
+
+    app.get('/users', require('./users').get);
+
+    app.post('/users/login', require('./login').post);
+    app.post('/users/create', require('./createUser').post)
+};
