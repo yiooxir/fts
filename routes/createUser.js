@@ -9,12 +9,17 @@ exports.post = function(req, res, next) {
     var userName = req.body.userName,
         password = req.body.password;
 
-    User.find({username: userName}, function(err, user) {
+    User.findOne({username: userName}, function(err, user) {
 
         if (err) next(err);
 
-        if (!user) new httpError(403, 'user is exists');
+        if (user) return next(new httpError(403, 'user with same name is already exists'));
 
-        res.json('stub for user create');
+        user = new User({username: userName, password: password});
+
+        user.save(function(err, user) {
+            if (err) next(err);
+            res.json(user);
+        })
     });
 };

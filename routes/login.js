@@ -9,7 +9,7 @@ var async = require('async');
 
 
 exports.post = function(req, res, next) {
-    var username = req.body.username;
+    var username = req.body.userName;
     var password = req.body.password;
 
     User.authorize(username, password, function(err, user) {

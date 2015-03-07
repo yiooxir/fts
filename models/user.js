@@ -15,6 +15,10 @@ var schema = new Schema({
         unique: true,
         required: true
     },
+    isSuperUser: {
+        type: Boolean,
+        default: false
+    },
     hashedPassword: {
         type: String,
         required: true
@@ -28,6 +32,14 @@ var schema = new Schema({
         default: Date.now
     }
 });
+
+schema.methods.toJSON = function() {
+    var obj = this.toObject();
+    delete obj.hashedPassword;
+    delete obj.salt;
+    delete obj.isSuperUser;
+    return obj
+};
 
 schema.methods.encryptPassword = function(password) {
     return crypto.createHmac('sha1', this.salt).update(password).digest('hex');
@@ -54,22 +66,16 @@ schema.statics.authorize = function(username, password, callback) {
             User.findOne({username: username}, callback);
         },
         function(user, callback) {
-            if (user) {
-                if (user.checkPassword(password)) {
-                    callback(null, user);
-                } else {
-                    callback(new AuthError("Пароль неверен"));
-                }
+            if (user && user.checkPassword(password)) {
+                callback(null, user);
             } else {
-                user = new User({username: username, password: password});
-                user.save(function(err) {
-                    if (err) return callback(err);
-                    callback(null, user);
-                });
+                callback(new AuthError("wrong username or password"));
             }
+
         }
     ], callback);
 };
+
 
 exports.User = mongoose.model('User', schema);
 
