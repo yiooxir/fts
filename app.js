@@ -36,6 +36,7 @@ app.use(session({
 }));
 
 app.use(require('./middleware/currentUser'));
+app.use(require('./middleware/setCORS'));
 
 
 routes(app);

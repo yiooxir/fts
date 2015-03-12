@@ -15,3 +15,8 @@ exports.get = function(req, res, next) {
     }
 };
 
+exports.find = function(req, res) {
+    var username = req.body.userName;
+    res.json('123');
+};
+

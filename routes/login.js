@@ -12,6 +12,18 @@ exports.post = function(req, res, next) {
     var username = req.body.userName;
     var password = req.body.password;
 
+
+    if (!username || !password) {
+        res.set({
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept"
+            //"Access-Control-Allow-Methods": "GET, POST, DELETE, PUT",
+        });
+        res.json('error. no parameters ');
+        return;
+    }
+
+
     User.authorize(username, password, function(err, user) {
         if (err) {
             if (err instanceof AuthError) {
@@ -22,6 +34,10 @@ exports.post = function(req, res, next) {
         }
 
         req.session.user = user._id;
+        res.set({
+            "Access-Control-Allow-Origin": "*"
+            //"Access-Control-Allow-Methods": "GET, POST, DELETE, PUT",
+        });
         res.json(user);
     });
 

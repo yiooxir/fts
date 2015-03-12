@@ -7,11 +7,22 @@
 
 module.exports = function(app) {
 
+    app.options('*', function(req, res) {
+
+        res.set({
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, POST, DELETE, PUT",
+            //"Access-Control-Allow-Credentials": true,
+            "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept"
+        }).end();
+    });
     app.get('/', function(req, res, next) {
         res.send('error');
     });
 
     app.get('/users', require('./users').get);
+
+    app.get('/users/find/:admin', require('./users').find);
 
     app.post('/users/login', require('./login').post);
     app.post('/users/create', require('./createUser').post)
