@@ -25,5 +25,6 @@ module.exports = function(app) {
     app.get('/users/find/:admin', require('./users').find);
 
     app.post('/users/login', require('./login').post);
-    app.post('/users/create', require('./createUser').post)
+
+    app.post('/users/create', require('./users').post)
 };
