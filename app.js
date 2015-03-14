@@ -25,13 +25,13 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public/client/build')));
 app.use(session({
     secret: config.get('session.secret'),
     key: config.get('session.key'),
     cookie: config.get('session.cookie'),
     store: new MongoStore({'db': mongoose.connections[0].name}),
-    resave: true,
+    resave: false,
     saveUninitialized: true
 }));
 
@@ -54,7 +54,7 @@ app.use(function(req, res, next) {
 // development error handler
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
-        console.log(err.status);
+        console.log(err.status, err.message, err.stack);
         res.status(err.status || 500).json(err.message);
 
   });

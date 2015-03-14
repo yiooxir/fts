@@ -8,21 +8,14 @@ var AuthError = require('../models/user').AuthError;
 var async = require('async');
 
 
-exports.post = function(req, res, next) {
+exports.login = function(req, res, next) {
     var username = req.body.userName;
     var password = req.body.password;
 
 
     if (!username || !password) {
-        res.set({
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept"
-            //"Access-Control-Allow-Methods": "GET, POST, DELETE, PUT",
-        });
-        res.json('error. no parameters ');
-        return;
+        return next( new HttpError(422, 'require more parameters'));
     }
-
 
     User.authorize(username, password, function(err, user) {
         if (err) {
@@ -34,11 +27,16 @@ exports.post = function(req, res, next) {
         }
 
         req.session.user = user._id;
-        res.set({
-            "Access-Control-Allow-Origin": "*"
-            //"Access-Control-Allow-Methods": "GET, POST, DELETE, PUT",
-        });
+
         res.json(user);
     });
 
+};
+
+exports.logout = function(req, res, next) {
+
+    req.session.destroy(function(err) {
+        if (err) return next(new HttpError(500));
+        res.json('logout');
+    });
 };
