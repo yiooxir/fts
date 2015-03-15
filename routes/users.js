@@ -4,8 +4,6 @@ var HttpError = require('../error').HttpError;
 exports.get = function(req, res, next) {
     if (!res.locals.user) return next(new HttpError(403, 'the user is not logged in'));
 
-    if (!res.locals.user.isSuperUser) res.json(res.locals.user);
-
     if (res.locals.user.isSuperUser) {
         User.find({}, function(err, users) {
             if (err) return next(err);
