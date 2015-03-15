@@ -19,6 +19,9 @@ var schema = new Schema({
         type: Boolean,
         default: false
     },
+    firms: {
+        type: Array
+    },
     hashedPassword: {
         type: String,
         required: true
@@ -37,13 +40,14 @@ schema.methods.toJSON = function() {
     var obj = this.toObject();
     delete obj.hashedPassword;
     delete obj.salt;
-    delete obj.isSuperUser;
-    return obj
+    return obj;
 };
+
 
 schema.methods.encryptPassword = function(password) {
     return crypto.createHmac('sha1', this.salt).update(password).digest('hex');
 };
+
 
 schema.virtual('password')
     .set(function(password) {
@@ -57,6 +61,7 @@ schema.virtual('password')
 schema.methods.checkPassword = function(password) {
     return this.encryptPassword(password) === this.hashedPassword;
 };
+
 
 schema.statics.authorize = function(username, password, callback) {
     var User = this;

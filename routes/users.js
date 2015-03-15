@@ -1,4 +1,5 @@
 var User = require('../models/user').User;
+var Firm = require('../models/firm').Firm;
 var HttpError = require('../error').HttpError;
 
 exports.get = function(req, res, next) {
@@ -11,7 +12,7 @@ exports.get = function(req, res, next) {
         })
     }
     else {
-        res.json(res.locals.user);
+        res.json([res.locals.user]);
     }
 };
 
@@ -38,6 +39,7 @@ exports.post = function(req, res, next) {
 
         user.save(function(err, user) {
             if (err) next(err);
+
             res.json(user);
         })
     });
@@ -47,4 +49,40 @@ exports.me = function(req, res, next) {
     if (!res.locals.user) return next(new HttpError(403, 'user not logged in'));
 
     res.json(res.locals.user);
+};
+
+
+// test data: firmId: 5505d13969de70d01fbb6953, userId: 550482d33dd86cb87276f64b
+exports.linkToFirm = function(req, res, next) {
+
+    var firmId = req.body.firmId,
+        userId = req.params.id;
+
+    if (!firmId || !userId)
+        return next(new HttpError(422, 'bad parameters'));
+
+    Firm.findById(firmId, function(err, firm) {
+        if (err) return next(new HttpError(422, 'firm with requested id is not found'));
+
+        User.findOneAndUpdate({_id: userId}, {$addToSet: {firms: firmId}}, function(err, firm) {
+            if (err) return next(err);
+
+            res.json(firm)
+        })
+    })
+};
+
+exports.excludeFirm = function(req, res, next) {
+
+    var firmId = req.body.firmId,
+        userId = req.params.id;
+
+    if (!firmId || !userId)
+        return next(new HttpError(422, 'bad parameters'));
+
+    User.findOneAndUpdate({_id: userId}, {$pull: {firms: firmId}}, function(err, firm) {
+        if (err) return next(err);
+
+        res.json(firm);
+    })
 };

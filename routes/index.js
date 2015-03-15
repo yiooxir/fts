@@ -21,7 +21,10 @@ module.exports = function(app) {
         res.send('error');
     });
 
-    app.get('/users', require('./users').get);
+    /* USERS ROUTES
+    * ------------------------------------------------*/
+
+     app.get('/users', require('./users').get);
 
     app.get('/users/me', require('./users').me);
 
@@ -31,6 +34,20 @@ module.exports = function(app) {
 
     app.post('/users/login', require('./auth').login);
 
-    app.post('/users/logout', require('./auth').logout)
+    app.post('/users/logout', require('./auth').logout);
+
+    app.put('/users/:id/linkToFirm', require('./users').linkToFirm);
+
+    app.put('/users/:id/excludeFirm', require('./users').excludeFirm);
+
+
+    /* FIRMS ROUTES
+    * ------------------------------------------------*/
+
+    app.post('/firms/create', require('./firms').post);
+
+    app.put('/firms/:id', require('./firms').put);
+
+    app.get('/firms', require('./firms').get);
 
 };
