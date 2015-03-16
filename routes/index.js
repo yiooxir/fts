@@ -50,4 +50,15 @@ module.exports = function(app) {
 
     app.get('/firms', require('./firms').get);
 
-};
+
+    /* COUNTS ROUTER
+     * ------------------------------------------------*/
+
+    app.get('/counts', require('./counts').get);
+    app.post('/counts/create', require('./counts').post);
+    app.put('/counts/:id', require('./counts').put);
+ };
+
+
+
+
