@@ -100,15 +100,15 @@ exports.createToken = function(req, res, next) {
 
         res.json(token);
     });
+};
 
-    //User.find({username: email}, function(err, users) {
-    //    if (users.length) return next(new HttpError(422, 'the specified user is already exists'));
-    //
-    //    var token = new Token({email: email, token: Math.round(Math.random()*10000000000000000000)});
-    //
-    //    token.save(function(err, token) {
-    //        if (err) return next(err);
-    //        res.json(token);
-    //    })
-    //});
+
+exports.getNameByToken = function(req, res, next) {
+    var token = req.params.token;
+    if (!token) return next(new HttpError(422, 'token is required'));
+
+    Token.find({token: token}, function(err, token) {
+        if (err) return next(new HttpError(403, 'bad token'));
+        res.json(token);
+    })
 };

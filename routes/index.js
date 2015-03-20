@@ -25,6 +25,8 @@ module.exports = function(app) {
 
     app.get('/users/find/:admin', require('./users').find);
 
+    app.get('/users/getNameByToken/:token', require('./users').getNameByToken);
+
     app.post('/users/create', require('./users').post);
 
     app.post('/users/createToken', checkAuth.isSuperUser, require('./users').createToken);
