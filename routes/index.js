@@ -1,9 +1,4 @@
-//var express = require('express');
-//var router = express.Router();
-
-
-
-//router.get('/users', require('./users').get);
+var checkAuth = require('../middleware/checkAuth');
 
 module.exports = function(app) {
 
@@ -22,15 +17,17 @@ module.exports = function(app) {
     });
 
     /* USERS ROUTES
-    * ------------------------------------------------*/
+     * ------------------------------------------------*/
 
-     app.get('/users', require('./users').get);
+    app.get('/users', require('./users').get);
 
     app.get('/users/me', require('./users').me);
 
     app.get('/users/find/:admin', require('./users').find);
 
     app.post('/users/create', require('./users').post);
+
+    app.post('/users/createToken', checkAuth.isSuperUser, require('./users').createToken);
 
     app.post('/users/login', require('./auth').login);
 
@@ -42,7 +39,7 @@ module.exports = function(app) {
 
 
     /* FIRMS ROUTES
-    * ------------------------------------------------*/
+     * ------------------------------------------------*/
 
     app.post('/firms/create', require('./firms').post);
 
@@ -57,7 +54,7 @@ module.exports = function(app) {
     app.get('/counts', require('./counts').get);
     app.post('/counts/create', require('./counts').post);
     app.put('/counts/:id', require('./counts').put);
- };
+};
 
 
 

@@ -5,6 +5,7 @@
 var User = require('../models/user').User,
     httpError = require('../error').HttpError;
 
+
 exports.post = function(req, res, next) {
     var userName = req.body.userName,
         password = req.body.password;
@@ -23,3 +24,4 @@ exports.post = function(req, res, next) {
         })
     });
 };
+

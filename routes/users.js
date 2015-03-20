@@ -1,5 +1,7 @@
 var User = require('../models/user').User;
 var Firm = require('../models/firm').Firm;
+var Token = require('../models/token').Token;
+
 var HttpError = require('../error').HttpError;
 
 exports.get = function(req, res, next) {
@@ -27,7 +29,7 @@ exports.post = function(req, res, next) {
 
     if (!userName || !password) return next(new HttpError(422, 'username and password are required'));
 
-    if (!res.locals.user.isSuperUser) return next(new HttpError(403, 'you do not have appropriate rights to create new user. please logout'));
+    // if (!res.locals.user.isSuperUser) return next(new HttpError(403, 'you do not have appropriate rights to create new user. please logout'));
 
     User.findOne({username: userName}, function(err, user) {
 
@@ -85,4 +87,28 @@ exports.excludeFirm = function(req, res, next) {
 
         res.json(firm);
     })
+};
+
+
+exports.createToken = function(req, res, next) {
+    var email = req.body.email;
+
+    if (!email) return next(new HttpError(422, 'email is not specified'));
+
+    Token.create(email, function (err, token) {
+        if (err) return next(err);
+
+        res.json(token);
+    });
+
+    //User.find({username: email}, function(err, users) {
+    //    if (users.length) return next(new HttpError(422, 'the specified user is already exists'));
+    //
+    //    var token = new Token({email: email, token: Math.round(Math.random()*10000000000000000000)});
+    //
+    //    token.save(function(err, token) {
+    //        if (err) return next(err);
+    //        res.json(token);
+    //    })
+    //});
 };
