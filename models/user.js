@@ -5,6 +5,7 @@
 var crypto = require('crypto');
 var async = require('async');
 var util = require('util');
+var Token = require('../models/token').Token;
 
 var mongoose = require('../lib/mongoose'),
     Schema = mongoose.Schema;
@@ -81,23 +82,35 @@ schema.statics.authorize = function(username, password, callback) {
     ], callback);
 };
 
-
-exports.User = mongoose.model('User', schema);
-
-schema.statics.create = function(username, password, callback) {
+schema.statics.create = function(username, password, token, callback) {
     var User = this;
 
     async.waterfall([
-        function(cb) {
-            User.findOne({username: username}, cb);
+        function(callback) {
+            User.findOne({username: username}, callback);
         },
-        function(user, cb) {
+        function(user, callback) {
             if (user) {
-                throw new Error()
+                callback(new Error('User already present'))
+            } else {
+                Token.findOneAndUpdate({token: token}, {used: true}, callback)
             }
+        },
+        function(token, callback) {
+            var user = new User({username: username, password: password});
+            user.save(function(err, user) {
+                if (err) {
+                    callback(new Error(err));
+                } else {
+                    callback(null, user);
+                }
+            })
         }
-    ])
+    ], callback)
 };
+
+exports.User = mongoose.model('User', schema);
+
 
 function AuthError(message) {
     Error.apply(this, arguments);

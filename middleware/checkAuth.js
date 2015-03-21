@@ -6,14 +6,14 @@ var HttpError = require('../error').HttpError;
 
 module.exports = {
     isSuperUser : function(req, res, next) {
-        if (req.session.user && !req.session.user.isSuperUser) {
+        if (res.locals.user && !res.locals.user.isSuperUser) {
             return next(new HttpError(401, " Вы не суперюзер "));
         }
         next();
     },
 
     isLoggedIn: function(req, res, next) {
-        if (!req.session.user) {
+        if (!res.locals.user) {
             return next(new HttpError(401, " Вы не авторизованы "));
         }
         next();

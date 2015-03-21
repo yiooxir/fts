@@ -29,7 +29,11 @@ module.exports = function(app) {
 
     app.post('/users/create', require('./users').post);
 
-    app.post('/users/createToken', checkAuth.isSuperUser, require('./users').createToken);
+    app.post('/users/tokens', checkAuth.isSuperUser, require('./users').createToken);
+
+    app.get('/users/tokens', checkAuth.isSuperUser, require('./users').getTokens);
+
+    app.get('/users/tokens/:token', require('./users').getToken);
 
     app.post('/users/login', require('./auth').login);
 

@@ -23,28 +23,33 @@ exports.find = function(req, res) {
     res.json('123');
 };
 
+/* create user */
 exports.post = function(req, res, next) {
     var userName = req.body.userName,
-        password = req.body.password;
+        password = req.body.password,
+        token = req.body.token;
 
     if (!userName || !password) return next(new HttpError(422, 'username and password are required'));
 
-    // if (!res.locals.user.isSuperUser) return next(new HttpError(403, 'you do not have appropriate rights to create new user. please logout'));
-
-    User.findOne({username: userName}, function(err, user) {
-
-        if (err) next(err);
-
-        if (user) return next(new HttpError(403, 'user with same name is already exists'));
-
-        user = new User({username: userName, password: password});
-
-        user.save(function(err, user) {
-            if (err) next(err);
-
-            res.json(user);
-        })
+    User.create(userName, password, token, function(err, user) {
+        if (err) return next(err);
+        res.json(user);
     });
+
+    //User.findOne({username: userName}, function(err, user) {
+    //
+    //    if (err) next(err);
+    //
+    //    if (user) return next(new HttpError(403, 'user with same name is already exists'));
+    //
+    //    user = new User({username: userName, password: password});
+    //
+    //    user.save(function(err, user) {
+    //        if (err) next(err);
+    //
+    //        res.json(user);
+    //    })
+    //});
 };
 
 exports.me = function(req, res, next) {
@@ -91,11 +96,11 @@ exports.excludeFirm = function(req, res, next) {
 
 
 exports.createToken = function(req, res, next) {
-    var email = req.body.email;
+    var username = req.body.username;
 
-    if (!email) return next(new HttpError(422, 'email is not specified'));
+    if (!username) return next(new HttpError(422, 'email is not specified'));
 
-    Token.create(email, function (err, token) {
+    Token.create(username, function (err, token) {
         if (err) return next(err);
 
         res.json(token);
@@ -109,6 +114,21 @@ exports.getNameByToken = function(req, res, next) {
 
     Token.find({token: token}, function(err, token) {
         if (err) return next(new HttpError(403, 'bad token'));
+        res.json(token);
+    })
+};
+
+exports.getTokens = function(req, res, next) {
+    Token.find({used: req.query.used}, function(err, query) {
+        if (err) return next(err);
+        res.json(query);
+    })
+};
+
+exports.getToken = function(req, res, next) {
+    Token.findOne({token: req.params.token}, function(err, token) {
+        if (err) return next(err);
+        if (!token) return next(new HttpError(403, 'bad token'));
         res.json(token);
     })
 };
