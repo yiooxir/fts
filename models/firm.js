@@ -11,6 +11,10 @@ var schema = new Schema({
         unique: true,
         required: true
     },
+    startNum: {
+        type: Number,
+        default: 0
+    },
     created: {
         type: Date,
         default: Date.now

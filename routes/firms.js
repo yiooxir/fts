@@ -29,15 +29,7 @@ exports.get = function(req, res, next) {
 
 exports.post = function(req, res, next) {
 
-    var name = req.body.name;
-
-    if (res.locals.user && !res.locals.user.isSuperUser)
-        return next(new HttpError(403, 'to create new firm can only user with admin rights'));
-
-    if (!name)
-        return next(new HttpError(422, 'more parameters are required'));
-
-    var firm = new Firm({name: name});
+    var firm = new Firm(req.body);
 
     firm.save(function(err, firm) {
         if (err) return next(new HttpError(500, err.message));
@@ -47,19 +39,8 @@ exports.post = function(req, res, next) {
 };
 
 exports.put = function(req, res, next) {
-
-    var name = req.body.name,
-        id = req.params.id;
-
-    if (res.locals.user && !res.locals.user.isSuperUser)
-        return next(new HttpError(403, 'to change the firm can only user with admin rights'));
-
-    if (!name)
-        return next(new HttpError(422, 'more parameters are required'));
-
-    Firm.findOneAndUpdate({_id: id}, {name: name}, function(err, firm) {
+    Firm.findOneAndUpdate({_id: req.params.id}, req.body, function(err, firm) {
         if (err) return next(500);
-
         res.json(firm);
     })
 };

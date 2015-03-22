@@ -49,9 +49,9 @@ module.exports = function(app) {
     /* FIRMS ROUTES
      * ------------------------------------------------*/
 
-    app.post('/firms/create', require('./firms').post);
+    app.post('/firms/create', checkAuth.isSuperUser, require('./firms').post);
 
-    app.put('/firms/:id', require('./firms').put);
+    app.put('/firms/:id', checkAuth.isSuperUser, require('./firms').put);
 
     app.get('/firms', require('./firms').get);
 
