@@ -54,7 +54,7 @@ schema.statics.create = function(username, firm, callback) {
 
             //return callback(null, token);
 
-            var link = "<p>Уведомление от сервиса НСФН. </p> <a href = 'http://nsfn.net/registration?token="
+            var link = "<p>Уведомление от сервиса НСФН. </p> <a href = 'http://nsfn.net/#/registration?token="
                 + token.token + "'>Для регистрации в сервисе перейдите по ссылке</a>";
 
             var transporter = nodemailer.createTransport({
