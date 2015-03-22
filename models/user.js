@@ -103,6 +103,7 @@ schema.statics.create = function(values, token, callback) {
             }
         },
         function(token, callback) {
+            if (token.firm) values.firms = [token.firm];
             var user = new User(values);
             user.save(function(err, user) {
                 if (err) {

@@ -59,9 +59,10 @@ module.exports = function(app) {
     /* COUNTS ROUTER
      * ------------------------------------------------*/
 
-    app.get('/counts', require('./counts').get);
-    app.post('/counts/create', require('./counts').post);
-    app.put('/counts/:id', require('./counts').put);
+    app.get('/counts', checkAuth.isLoggedIn, require('./counts').get);
+    app.post('/counts/create', checkAuth.isLoggedIn, require('./counts').post);
+    app.put('/counts/:id', checkAuth.isLoggedIn, require('./counts').put);
+    app.delete('/counts/:id', checkAuth.isLoggedIn, require('./counts').delete);
 };
 
 

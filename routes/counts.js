@@ -9,7 +9,7 @@ var HttpError = require('../error').HttpError;
 
 exports.get = function(req, res, next) {
     var user = res.locals.user;
-    var query = user.isSuperUser ? {} : {createdBy: user._id};
+    var query = user.isSuperUser ? {} : {createdBy: user._id.toString()};
 
     Count.find(query, function(err, counts) {
         if (err) return next(err);
@@ -19,12 +19,8 @@ exports.get = function(req, res, next) {
 };
 
 exports.post = function(req, res, next) {
-    var values = {};
-    if (req.body.num) values.num = req.body.num;
-    if (req.body.firm) values.firm = req.body.firm;
-    values.createdBy = res.locals.user._id;
 
-    var count = new Count(values);
+    var count = new Count(req.body);
 
     count.save(function(err, count) {
         if (err) return next(err);
@@ -34,12 +30,8 @@ exports.post = function(req, res, next) {
 };
 
 exports.put = function(req, res, next) {
-    var countId = req.params.id;
-    var value = {};
-    if (req.body.num) value.num = req.body.num;
-    if (req.body.firm) value.firm = req.body.firm;
 
-    Count.findOneAndUpdate({_id: countId}, value, function(err, count) {
+    Count.findOneAndUpdate({_id: req.params.id}, req.body, function(err, count) {
         if(err) return next(err);
 
         res.json(count);
@@ -48,4 +40,8 @@ exports.put = function(req, res, next) {
 
 exports.delete = function(req, res, next) {
 
+    Count.findOneAndRemove({_id: req.params.id}, {},  function(err, data) {
+        if (err) return next(err);
+        res.json({removed: req.params.id});
+    })
 };

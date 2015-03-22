@@ -13,7 +13,7 @@ var schema = new Schema({
     name: {
         type: String
     },
-    num: {
+    amount: {
         type: String,
         required: true
     },
