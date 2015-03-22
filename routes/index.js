@@ -39,6 +39,8 @@ module.exports = function(app) {
 
     app.post('/users/logout', require('./auth').logout);
 
+    app.put('/users/:user', require('./users').put);
+
     app.put('/users/:id/linkToFirm', require('./users').linkToFirm);
 
     app.put('/users/:id/excludeFirm', require('./users').excludeFirm);

@@ -1,7 +1,7 @@
 var mongoose = require('../lib/mongoose'),
     Schema = mongoose.Schema;
 var async = require('async');
-var User = require('../models/user').User;
+
 var nodemailer = require('nodemailer');
 
 var schema = new Schema({
@@ -13,6 +13,10 @@ var schema = new Schema({
         type: String,
         required: true
     },
+    startNum: {
+        type: Number,
+        default: 0
+    },
     used: {
         type: Boolean,
         default: false
@@ -23,8 +27,9 @@ var schema = new Schema({
     }
 });
 
-schema.statics.create = function(username, callback) {
+schema.statics.create = function(username, startNum, callback) {
     var Token = this;
+    var User = require('./user').User;
 
     async.waterfall([
         function(callback) {
@@ -35,7 +40,11 @@ schema.statics.create = function(username, callback) {
             Token.remove({username: username}, callback)
         },
         function(res, callback) {
-            var token = new Token({username: username, token: Math.round(Math.random()*1000000000000)});
+            var token = new Token({
+                username: username,
+                token: Math.round(Math.random()*1000000000000),
+                startNum: startNum
+            });
             token.save(callback)
         },
         function(token, num, callback) {

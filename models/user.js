@@ -5,7 +5,7 @@
 var crypto = require('crypto');
 var async = require('async');
 var util = require('util');
-var Token = require('../models/token').Token;
+
 
 var mongoose = require('../lib/mongoose'),
     Schema = mongoose.Schema;
@@ -14,6 +14,11 @@ var schema = new Schema({
     username: {
         type: String,
         unique: true,
+        required: true
+    },
+
+    contractor: {
+        type: String,
         required: true
     },
     isSuperUser: {
@@ -82,12 +87,13 @@ schema.statics.authorize = function(username, password, callback) {
     ], callback);
 };
 
-schema.statics.create = function(username, password, token, callback) {
+schema.statics.create = function(values, token, callback) {
     var User = this;
+    var Token = require('../models/token').Token;
 
     async.waterfall([
         function(callback) {
-            User.findOne({username: username}, callback);
+            User.findOne({username: values.username}, callback);
         },
         function(user, callback) {
             if (user) {
@@ -97,7 +103,7 @@ schema.statics.create = function(username, password, token, callback) {
             }
         },
         function(token, callback) {
-            var user = new User({username: username, password: password});
+            var user = new User(values);
             user.save(function(err, user) {
                 if (err) {
                     callback(new Error(err));

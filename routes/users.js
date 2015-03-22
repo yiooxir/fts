@@ -25,31 +25,21 @@ exports.find = function(req, res) {
 
 /* create user */
 exports.post = function(req, res, next) {
-    var userName = req.body.userName,
-        password = req.body.password,
-        token = req.body.token;
+    var token = req.body.token;
+    delete req.body.token;
+    var values = req.body;
 
-    if (!userName || !password) return next(new HttpError(422, 'username and password are required'));
-
-    User.create(userName, password, token, function(err, user) {
+    User.create(values, token, function(err, user) {
         if (err) return next(err);
         res.json(user);
     });
+};
 
-    //User.findOne({username: userName}, function(err, user) {
-    //
-    //    if (err) next(err);
-    //
-    //    if (user) return next(new HttpError(403, 'user with same name is already exists'));
-    //
-    //    user = new User({username: userName, password: password});
-    //
-    //    user.save(function(err, user) {
-    //        if (err) next(err);
-    //
-    //        res.json(user);
-    //    })
-    //});
+exports.put = function(req, res, next) {
+    User.findOneAndUpdate({_id: req.params.user}, req.body, function(err, user) {
+        if (err) return next(err);
+        res.json(user);
+    })
 };
 
 exports.me = function(req, res, next) {
@@ -96,11 +86,12 @@ exports.excludeFirm = function(req, res, next) {
 
 
 exports.createToken = function(req, res, next) {
-    var username = req.body.username;
+    var username = req.body.username,
+        startNum = req.body.startNum || 0;
 
     if (!username) return next(new HttpError(422, 'email is not specified'));
 
-    Token.create(username, function (err, token) {
+    Token.create(username, startNum, function (err, token) {
         if (err) return next(err);
 
         res.json(token);
