@@ -67,7 +67,7 @@ schema.statics.create = function(username, firm, callback) {
 
             var mailOptions = {
                 from: 'nsfn.n@yandex.ru',
-                to: 'spectrs@bk.ru',
+                to: token.username,
                 subject: 'Уведомление от сервиса НСФН.',
                 html: link
             };
