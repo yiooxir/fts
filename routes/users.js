@@ -87,11 +87,11 @@ exports.excludeFirm = function(req, res, next) {
 
 exports.createToken = function(req, res, next) {
     var username = req.body.username,
-        startNum = req.body.startNum || 0;
+        firm = req.body.firm || 0;
 
     if (!username) return next(new HttpError(422, 'email is not specified'));
 
-    Token.create(username, startNum, function (err, token) {
+    Token.create(username, firm, function (err, token) {
         if (err) return next(err);
 
         res.json(token);

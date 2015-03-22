@@ -17,6 +17,9 @@ var schema = new Schema({
         type: Number,
         default: 0
     },
+    firm: {
+        type: Object
+    },
     used: {
         type: Boolean,
         default: false
@@ -27,7 +30,7 @@ var schema = new Schema({
     }
 });
 
-schema.statics.create = function(username, startNum, callback) {
+schema.statics.create = function(username, firm, callback) {
     var Token = this;
     var User = require('./user').User;
 
@@ -36,23 +39,23 @@ schema.statics.create = function(username, startNum, callback) {
             User.find({username: username}, callback)
         },
         function(users, callback) {
-            if (users.length) callback(new Error('the specified user is already exists'));
+            if (users.length) return callback(new Error('the specified user is already exists'));
             Token.remove({username: username}, callback)
         },
         function(res, callback) {
             var token = new Token({
                 username: username,
                 token: Math.round(Math.random()*1000000000000),
-                startNum: startNum
+                firm: firm
             });
             token.save(callback)
         },
         function(token, num, callback) {
 
-            return callback(null, token);
+            //return callback(null, token);
 
-            var link = '<p>Сообщение 1</p>' +
-                '<a href = http://nsfn.net/auth?token=' +token.token + '>Для регистрации в сервисе перейдите по ссылке</a>';
+            var link = "<p>Уведомление от сервиса НСФН. </p> <a href = 'http://nsfn.net/auth?token="
+                + token.token + "'>Для регистрации в сервисе перейдите по ссылке</a>";
 
             var transporter = nodemailer.createTransport({
                 service: 'yandex',
@@ -65,7 +68,7 @@ schema.statics.create = function(username, startNum, callback) {
             var mailOptions = {
                 from: 'nsfn.n@yandex.ru',
                 to: 'spectrs@bk.ru',
-                subject: 'Уведомление от сервиса NSFN. тест.',
+                subject: 'Уведомление от сервиса НСФН.',
                 html: link
             };
 
