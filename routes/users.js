@@ -120,6 +120,15 @@ exports.getToken = function(req, res, next) {
     Token.findOne({token: req.params.token}, function(err, token) {
         if (err) return next(err);
         if (!token) return next(new HttpError(403, 'bad token'));
+        var dt = new Date() - token.created;
+        if (dt > 1000*60*60*24*3) return next(new HttpError(403, 'the token is out of date'));
         res.json(token);
+    })
+};
+
+exports.removeToken = function(req, res, next) {
+    Token.findOneAndRemove({_id: req.params.tokenId}, function(err) {
+        if (err) return next(err);
+        res.json('the token is removed');
     })
 };

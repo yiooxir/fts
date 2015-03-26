@@ -33,6 +33,8 @@ module.exports = function(app) {
 
     app.get('/users/tokens', checkAuth.isSuperUser, require('./users').getTokens);
 
+    app.delete('/users/tokens/:tokenId', checkAuth.isSuperUser, require('./users').removeToken);
+
     app.get('/users/tokens/:token', require('./users').getToken);
 
     app.post('/users/login', require('./auth').login);
