@@ -18,7 +18,8 @@ var schema = new Schema({
         required: true
     },
     sysNumber: {
-        type: Number
+        type: Number,
+        default: null
     },
     firm: {
         type: Object,
@@ -30,6 +31,10 @@ var schema = new Schema({
     },
     createdBy: {
         type: Object,
+        required: true
+    },
+    contractor: {
+        type: String,
         required: true
     }
 });

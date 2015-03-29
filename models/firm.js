@@ -13,7 +13,7 @@ var schema = new Schema({
     },
     startNum: {
         type: Number,
-        default: 0
+        default: 1
     },
     created: {
         type: Date,
