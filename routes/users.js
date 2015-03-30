@@ -29,10 +29,19 @@ exports.post = function(req, res, next) {
     delete req.body.token;
     var values = req.body;
 
-    User.create(values, token, function(err, user) {
-        if (err) return next(err);
-        res.json(user);
-    });
+    if (res.locals.user.isSuperUser) {
+        var user = new User(req.body);
+
+        user.save(function(err, user) {
+            if (err) return next(err);
+            return res.json(user);
+        })
+    } else {
+        User.create(values, token, function(err, user) {
+            if (err) return next(err);
+            res.json(user);
+        });
+    }
 };
 
 exports.put = function(req, res, next) {
