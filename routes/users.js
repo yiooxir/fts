@@ -45,25 +45,27 @@ exports.post = function(req, res, next) {
 };
 
 exports.put = function(req, res, next) {
+
     User.findById(req.params.user, function(err, user) {
         if (err) return next(err);
 
         /* change password */
-        if(req.body.hasOwnProperty('password') && req.body.password) {
-            if (!req.body.hasOwnProperty('newPass') || !req.body.newPass) {
-                return next(new HttpError(422, 'ошибка: новый пароль имеет не верный формат.'))
+        if(req.body.hasOwnProperty('newPass')) {
+
+            if (!req.body.newPass) return next(new HttpError(422, 'Новый пароль не может быть пустым.'));
+
+            if (user.isSuperUser) {
+                if (!req.body.hasOwnProperty('password') || !req.body.password) return next(new HttpError(422, 'Старый пароль не верен или пустой.'));
             }
 
-            if (!user.checkPassword(req.body.password)) {
-                return next(new HttpError(403, 'старый пароль не верен'))
-            }
             user.password = req.body.newPass;
 
             user.save(function(err, user) {
                 if (err) return next(err);
                 res.json(user);
 
-                if (res.locals.username != 'admin') {
+                /* отправляем почту только для обычных пользователей */
+                if (!user.isSuperUser) {
                     var link = "<p>Уведомление от сервиса НСФН. Пароль к вашему аккаунту изменен. Новый пароль " + req.body.newPass +"</p> " +
                         "<a href = 'http://nsfn.net/login'>форма входа</a>";
 
@@ -77,13 +79,13 @@ exports.put = function(req, res, next) {
 
                     var mailOptions = {
                         from: 'nsfn.n@yandex.ru',
-                        to: req.body.username,
+                        to: user.username,
                         subject: 'Уведомление от сервиса НСФН.',
                         html: link
                     };
 
                     transporter.sendMail(mailOptions, function(err) {
-                        if (err) return callback(new Error('message was not send' + err));
+                        if (err) return console.error('Ошибка при отправке почты.', err);
                         console.log('Сообщение о смене пароля отправлено пользователю на адрес: ', user.username);
                     });
                 }
@@ -91,7 +93,7 @@ exports.put = function(req, res, next) {
 
         /* other changes */
         } else {
-            User.findOneAndUpdate(req.params.user, req.body, function(err, user) {
+            User.findByIdAndUpdate(req.params.user, req.body, function(err, user) {
                 if (err) return next(err);
                 return res.json(user);
             })
