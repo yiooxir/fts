@@ -16,10 +16,8 @@ var schema = new Schema({
         unique: true,
         required: true
     },
-
     contractor: {
-        type: String,
-        required: true
+        type: String
     },
     isSuperUser: {
         type: Boolean,
@@ -104,7 +102,9 @@ schema.statics.create = function(values, token, callback) {
         },
         function(token, callback) {
             if (token.firm) values.firms = [token.firm];
+
             var user = new User(values);
+
             user.save(function(err, user) {
                 if (err) {
                     callback(new Error(err));

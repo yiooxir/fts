@@ -19,11 +19,11 @@ module.exports = function(app) {
     /* USERS ROUTES
      * ------------------------------------------------*/
 
-    app.get('/users', require('./users').get);
+    app.get('/users', checkAuth.isLoggedIn, require('./users').get);
 
-    app.get('/users/me', require('./users').me);
+    app.get('/users/me', checkAuth.isLoggedIn, require('./users').me);
 
-    app.get('/users/find/:admin', require('./users').find);
+    app.get('/users/find/:admin', checkAuth.isLoggedIn, require('./users').find);
 
     app.get('/users/getNameByToken/:token', require('./users').getNameByToken);
 
@@ -41,11 +41,11 @@ module.exports = function(app) {
 
     app.post('/users/logout', require('./auth').logout);
 
-    app.put('/users/:user', require('./users').put);
+    app.put('/users/:user', checkAuth.isSuperUser, require('./users').put);
 
-    app.put('/users/:id/linkToFirm', require('./users').linkToFirm);
+    app.put('/users/:id/linkToFirm', checkAuth.isSuperUser, require('./users').linkToFirm);
 
-    app.put('/users/:id/excludeFirm', require('./users').excludeFirm);
+    app.put('/users/:id/excludeFirm', checkAuth.isSuperUser, require('./users').excludeFirm);
 
 
     /* FIRMS ROUTES
@@ -55,7 +55,7 @@ module.exports = function(app) {
 
     app.put('/firms/:id', checkAuth.isSuperUser, require('./firms').put);
 
-    app.get('/firms', require('./firms').get);
+    app.get('/firms', checkAuth.isLoggedIn, require('./firms').get);
 
 
     /* COUNTS ROUTER

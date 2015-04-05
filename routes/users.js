@@ -1,7 +1,7 @@
 var User = require('../models/user').User;
 var Firm = require('../models/firm').Firm;
 var Token = require('../models/token').Token;
-
+var nodemailer = require('nodemailer');
 var HttpError = require('../error').HttpError;
 
 exports.get = function(req, res, next) {
@@ -45,10 +45,58 @@ exports.post = function(req, res, next) {
 };
 
 exports.put = function(req, res, next) {
-    User.findOneAndUpdate({_id: req.params.user}, req.body, function(err, user) {
+    User.findById(req.params.user, function(err, user) {
         if (err) return next(err);
-        res.json(user);
-    })
+
+        /* change password */
+        if(req.body.hasOwnProperty('password') && req.body.password) {
+            if (!req.body.hasOwnProperty('newPass') || !req.body.newPass) {
+                return next(new HttpError(422, 'ошибка: новый пароль имеет не верный формат.'))
+            }
+
+            if (!user.checkPassword(req.body.password)) {
+                return next(new HttpError(403, 'старый пароль не верен'))
+            }
+            user.password = req.body.newPass;
+
+            user.save(function(err, user) {
+                if (err) return next(err);
+                res.json(user);
+
+                if (res.locals.username != 'admin') {
+                    var link = "<p>Уведомление от сервиса НСФН. Пароль к вашему аккаунту изменен. Новый пароль " + req.body.newPass +"</p> " +
+                        "<a href = 'http://nsfn.net/login'>форма входа</a>";
+
+                    var transporter = nodemailer.createTransport({
+                        service: 'yandex',
+                        auth: {
+                            user: 'nsfn.n@yandex.ru',
+                            pass: 'Nikrol4'
+                        }
+                    });
+
+                    var mailOptions = {
+                        from: 'nsfn.n@yandex.ru',
+                        to: req.body.username,
+                        subject: 'Уведомление от сервиса НСФН.',
+                        html: link
+                    };
+
+                    transporter.sendMail(mailOptions, function(err) {
+                        if (err) return callback(new Error('message was not send' + err));
+                        console.log('Сообщение о смене пароля отправлено пользователю на адрес: ', user.username);
+                    });
+                }
+            });
+
+        /* other changes */
+        } else {
+            User.findOneAndUpdate(req.params.user, req.body, function(err, user) {
+                if (err) return next(err);
+                return res.json(user);
+            })
+        }
+    });
 };
 
 exports.me = function(req, res, next) {

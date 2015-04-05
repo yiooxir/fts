@@ -12,6 +12,7 @@ var MongoStore = require('connect-mongostore')(session);
 //var router = express.Router();
 var routes = require('./routes/index');
 var users = require('./routes/users');
+_ = require('underscore');
 
 var app = express();
 
