@@ -41,7 +41,7 @@ module.exports = function(app) {
 
     app.post('/users/logout', require('./auth').logout);
 
-    app.put('/users/:user', checkAuth.isSuperUser, require('./users').put);
+    app.put('/users/:user', checkAuth.isLoggedIn, require('./users').put);
 
     app.put('/users/:id/linkToFirm', checkAuth.isSuperUser, require('./users').linkToFirm);
 
